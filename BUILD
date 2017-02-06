@@ -29,6 +29,8 @@ cc_library(
 	name = "2d-brownian-motion",
 	srcs = ["2DBrownianMotionPath.cpp"],
 	hdrs = ["2DBrownianMotionPath.hpp"],
+	deps = ["//src/armadillo-7.600.2:armadillo"],
 	visibility = ["//visibility:public"],
 	linkopts = ["-lm"],
+	copts = ["-O"],
 )
