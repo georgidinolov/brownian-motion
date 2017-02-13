@@ -1,3 +1,4 @@
+#include <armadillo>
 #include <vector>
 
 class BrownianMotion
