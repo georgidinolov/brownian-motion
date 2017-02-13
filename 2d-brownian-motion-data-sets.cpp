@@ -15,7 +15,7 @@ int main()
   double x_0 = 0;
   double y_0 = 0;
   double t = 1;
-  unsigned number_data_sets = 100;
+  unsigned number_data_sets = 1000;
   unsigned number_observations_per_data_set = 128;
 
   for (unsigned i=0; i<number_data_sets; ++i) {
