@@ -3,6 +3,7 @@ cc_binary(
 	srcs = ["2d-brownian-motion-data-sets.cpp"],
 	includes = ["2DBrownianMotionPath.hpp"],
 	deps = [":2d-brownian-motion"],
+	copts = ["-O"],
 )
 
 cc_binary(
