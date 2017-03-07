@@ -37,7 +37,7 @@ public:
   double get_order() const;
   const std::vector<std::vector<double>>& get_path() const;
   void generate_path();
-  void generate_path(unsigned seed);
+  void generate_path(unsigned long seed);
   
 private:
   unsigned order_;

@@ -12,12 +12,12 @@ int main()
   unsigned order = 10000;
   double sigma_x = 1.0;
   double sigma_y = 1.0;
-  double rho = 0.8;
+  double rho = 0.6;
   double x_0 = 0;
   double y_0 = 0;
   double t = 1;
-  unsigned number_data_sets = 1000;
-  unsigned number_observations_per_data_set = 128;
+  unsigned number_data_sets = 500;
+  unsigned number_observations_per_data_set = 16;
 
   for (unsigned i=0; i<number_data_sets; ++i) {
 
@@ -35,8 +35,7 @@ int main()
 
   	unsigned seed = i*number_observations_per_data_set + j;
 
-  	BrownianMotion BM = BrownianMotion(seed,
-					   order,
+  	BrownianMotion BM = BrownianMotion(order,
   					   rho,
   					   sigma_x,
   					   sigma_y,
@@ -52,9 +51,9 @@ int main()
   		  << BM.get_a() << ","
   		  << BM.get_x_T() << ","
   		  << BM.get_b() << ","
-  		  << -BM.get_d() << ","
-  		  << -BM.get_y_T() << ","
-		  << -BM.get_c() << "\n";
+  		  << BM.get_c() << ","
+  		  << BM.get_y_T() << ","
+		  << BM.get_d() << "\n";
       }
       
       path_file.close();

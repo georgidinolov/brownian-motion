@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 #include <random>
 #include <iostream>
 #include <vector>
@@ -132,10 +134,13 @@ void BrownianMotion::generate_path()
   generate_path(seed);
 }
 
-void BrownianMotion::generate_path(unsigned seed)
+void BrownianMotion::generate_path(unsigned long int seed)
 {
-  std::default_random_engine generator(seed);
-  std::normal_distribution<double> rnorm(0.0, 1.0);
+  const gsl_rng_type * T;
+  gsl_rng * r;
+  T = gsl_rng_mt19937;
+  r = gsl_rng_alloc(T);
+  gsl_rng_set(r, seed);
 
   double dt = t_/order_;
   std::vector<double> x_path = std::vector<double>(order_+1);
@@ -149,11 +154,11 @@ void BrownianMotion::generate_path(unsigned seed)
   y_path[0] = y_0_;
   for (unsigned i=1; i<order_+1; ++i) {
     double new_y = 
-      y_path[i-1] + std::sqrt(dt) * sigma_y_ * rnorm(generator);
+      y_path[i-1] + std::sqrt(dt) * sigma_y_ * gsl_ran_gaussian(r, 1.0);
 
     double new_x = 
       x_path[i-1] + sigma_x_/sigma_y_*rho_*(new_y-y_path[i-1]) + 
-      std::sqrt((1-std::pow(rho_,2))*dt) * sigma_x_ * rnorm(generator);
+      std::sqrt((1-std::pow(rho_,2))*dt) * sigma_x_ * gsl_ran_gaussian(r, 1.0);
 
     if (new_x >= b_) {
       b_ = new_x;
@@ -178,4 +183,6 @@ void BrownianMotion::generate_path(unsigned seed)
   path_ = std::vector<std::vector<double>> (2);
   path_[0] = x_path;
   path_[1] = y_path;
+
+  gsl_rng_free(r);
 }
