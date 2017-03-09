@@ -12,14 +12,14 @@ int main()
   unsigned order = 10000;
   double sigma_x = 1.0;
   double sigma_y = 1.0;
-  double rho = 0.6;
+  double rho = -0.6;
   double x_0 = 0;
   double y_0 = 0;
   double t = 1;
   unsigned number_data_sets = 500;
-  unsigned number_observations_per_data_set = 16;
+  unsigned number_observations_per_data_set = 64;
 
-  for (unsigned i=0; i<number_data_sets; ++i) {
+  for (unsigned i=500+0; i<number_data_sets+500; ++i) {
 
     std::ofstream path_file;
     std::string file_name = "data/data-set-" +
@@ -35,7 +35,8 @@ int main()
 
   	unsigned seed = i*number_observations_per_data_set + j;
 
-  	BrownianMotion BM = BrownianMotion(order,
+  	BrownianMotion BM = BrownianMotion(seed,
+					   order,
   					   rho,
   					   sigma_x,
   					   sigma_y,
