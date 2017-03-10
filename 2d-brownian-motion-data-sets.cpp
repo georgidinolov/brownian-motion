@@ -12,14 +12,20 @@ int main()
   unsigned order = 10000;
   double sigma_x = 1.0;
   double sigma_y = 1.0;
-  double rho = -0.6;
+  double rho_base = 0.6;
+  double rho = rho_base;
   double x_0 = 0;
   double y_0 = 0;
   double t = 1;
-  unsigned number_data_sets = 500;
-  unsigned number_observations_per_data_set = 64;
+  unsigned number_data_sets = 1;
+  unsigned number_observations_per_data_set = 1000;
 
-  for (unsigned i=500+0; i<number_data_sets+500; ++i) {
+  for (unsigned i=0+1; i<number_data_sets+1; ++i) {
+    // if (i > 500 + 1000) {
+    //   rho = -1.0 * rho_base;
+    // } else {
+    //   rho = rho_base;
+    // }
 
     std::ofstream path_file;
     std::string file_name = "data/data-set-" +
@@ -33,7 +39,7 @@ int main()
       
       for (unsigned j=0; j<number_observations_per_data_set; ++j) {
 
-  	unsigned seed = i*number_observations_per_data_set + j;
+  	long unsigned seed = (i-1)*number_observations_per_data_set + j + 1;
 
   	BrownianMotion BM = BrownianMotion(seed,
 					   order,
@@ -49,9 +55,9 @@ int main()
   		  << x_0 << ","
   		  << y_0 << ","
   		  << t << ","
-  		  << BM.get_a() << ","
-  		  << BM.get_x_T() << ","
-  		  << BM.get_b() << ","
+  		  << -BM.get_b() << ","
+  		  << -BM.get_x_T() << ","
+  		  << -BM.get_a() << ","
   		  << BM.get_c() << ","
   		  << BM.get_y_T() << ","
 		  << BM.get_d() << "\n";
