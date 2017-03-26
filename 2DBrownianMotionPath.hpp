@@ -13,7 +13,7 @@ public:
 		 double y_0,
 		 double t);
 
-  BrownianMotion(unsigned seed,
+  BrownianMotion(long unsigned seed,
 		 unsigned order,
 		 double rho,
 		 double sigma_x,
@@ -35,6 +35,7 @@ public:
   double get_y_T() const;
   double get_t() const;
   double get_order() const;
+  long unsigned get_seed() const;
   const std::vector<std::vector<double>>& get_path() const;
   void generate_path();
   void generate_path(unsigned long seed);
@@ -47,6 +48,7 @@ private:
   double x_0_;
   double y_0_;
   double t_;
+  long unsigned seed_;
   std::vector<std::vector<double>> path_;
   double a_; // min obtained x-dir
   double b_; // max obtained x-dir

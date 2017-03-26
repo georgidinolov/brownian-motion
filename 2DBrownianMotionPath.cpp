@@ -38,7 +38,7 @@ BrownianMotion::BrownianMotion(unsigned order,
   generate_path();
 }
 
-BrownianMotion::BrownianMotion(unsigned seed,
+BrownianMotion::BrownianMotion(long unsigned seed,
 			       unsigned order,
 			       double rho,
 			       double sigma_x,
@@ -52,9 +52,10 @@ BrownianMotion::BrownianMotion(unsigned seed,
     sigma_y_(sigma_y),
     x_0_(x_0),
     y_0_(y_0),
-    t_(t)
+    t_(t),
+    seed_(seed)
 {
-  generate_path(seed);
+  generate_path(seed_);
 }
 
 double BrownianMotion::get_a() const
@@ -122,6 +123,10 @@ double BrownianMotion::get_order() const
 {
   return order_;
 }
+long unsigned BrownianMotion::get_seed() const
+{
+  return seed_;
+}
 
 const std::vector<std::vector<double>>& BrownianMotion::get_path() const 
 {
@@ -130,8 +135,8 @@ const std::vector<std::vector<double>>& BrownianMotion::get_path() const
 
 void BrownianMotion::generate_path()
 {
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  generate_path(seed);
+  seed_ = std::chrono::system_clock::now().time_since_epoch().count();
+  generate_path(seed_);
 }
 
 void BrownianMotion::generate_path(unsigned long int seed)
