@@ -32,5 +32,5 @@ cc_library(
 	srcs = ["2DBrownianMotionPath.cpp"],
 	hdrs = ["2DBrownianMotionPath.hpp"],
 	visibility = ["//visibility:public"],
-	linkopts = ["-lm", "-lgsl"],
+	linkopts = ["-lm", "-lgsl", "-lgslcblas"],
 )
