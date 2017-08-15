@@ -9,7 +9,7 @@ using namespace std;
 
 int main() 
 {
-  unsigned order = 10000;
+  unsigned order = 5e6;
   double sigma_x = 1.0;
   double sigma_y = 1.0;
   double rho_base = 0.6;
@@ -17,15 +17,14 @@ int main()
   double x_0 = 0;
   double y_0 = 0;
   double t = 1;
-  unsigned number_data_sets = 1;
-  unsigned number_observations_per_data_set = 1000;
+  unsigned number_data_sets = 500;
+  unsigned number_observations_per_data_set = 128;
 
+#pragma omp parallel for default(shared)
   for (unsigned i=0; i<number_data_sets; ++i) {
 
     std::ofstream path_file;
-    std::string file_name = "data/likelihoods/data-set-" +
-      std::to_string(i+1) +
-      ".csv";
+    std::string file_name = "data/data-set-" + std::to_string(i+1) + ".csv";
     path_file.open(file_name);
     path_file << std::fixed << std::setprecision(32);
     
@@ -37,8 +36,7 @@ int main()
   	// long unsigned seed = (i-1)*number_observations_per_data_set + j + 1 + 10;
 	long unsigned seed = i*number_observations_per_data_set + j;
 
-  	BrownianMotion BM = BrownianMotion(seed,
-					   order,
+  	BrownianMotion BM = BrownianMotion(order,
   					   rho,
   					   sigma_x,
   					   sigma_y,
