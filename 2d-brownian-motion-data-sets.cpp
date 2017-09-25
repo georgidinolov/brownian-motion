@@ -36,7 +36,8 @@ int main()
   	// long unsigned seed = (i-1)*number_observations_per_data_set + j + 1 + 10;
 	long unsigned seed = i*number_observations_per_data_set + j;
 
-  	BrownianMotion BM = BrownianMotion(order,
+  	BrownianMotion BM = BrownianMotion(seed,
+					   order,
   					   rho,
   					   sigma_x,
   					   sigma_y,
