@@ -18,7 +18,7 @@ int main()
   double y_0 = 0;
   double t = 1;
   unsigned number_data_sets = 500;
-  unsigned number_observations_per_data_set = 128;
+  unsigned number_observations_per_data_set = 64;
 
 #pragma omp parallel for default(shared)
   for (unsigned i=0; i<number_data_sets; ++i) {

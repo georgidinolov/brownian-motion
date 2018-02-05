@@ -1,4 +1,15 @@
 cc_binary(
+	name = "generate-likelihood-points",
+	srcs = ["generate-likelihood-points.cpp"],
+	includes = ["GaussianInterpolator.hpp"],
+	deps = ["//src/gaussian-interpolator:gaussian-interpolator"],
+	copts = ["-Isrc/nlopt/api",
+	      	 "-fopenmp"],
+	linkopts = ["-lm", "-lgsl", "-lgslcblas", "-fopenmp"],
+	visibility = ["//visibility:public"],
+)
+
+cc_binary(
 	name = "2d-brownian-motion-data-sets",
 	srcs = ["2d-brownian-motion-data-sets.cpp"],
 	includes = ["2DBrownianMotionPath.hpp"],
