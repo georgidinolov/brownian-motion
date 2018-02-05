@@ -85,8 +85,8 @@ int main(int argc, char *argv[]) {
 	gsl_rng_set(r_ptr_threadprivate, seed);
 
 	double rho = gsl_rng_uniform(r_ptr_threadprivate)*1.90 - 0.95;
-	double log_sigma_x = 1 + gsl_ran_gaussian(r_ptr_threadprivate, 1.0);
-	double log_sigma_y = 1 + gsl_ran_gaussian(r_ptr_threadprivate, 1.0);
+	double log_sigma_x = 2 + gsl_ran_gaussian(r_ptr_threadprivate, 2.0);
+	double log_sigma_y = 1 + gsl_ran_gaussian(r_ptr_threadprivate, 2.0);
 
 	double sigma_x = exp(log_sigma_x);
 	double sigma_y = exp(log_sigma_y);
