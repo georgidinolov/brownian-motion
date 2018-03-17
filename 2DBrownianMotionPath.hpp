@@ -1,3 +1,5 @@
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 class BrownianMotion
@@ -20,6 +22,7 @@ public:
 		 double x_0,
 		 double y_0,
 		 double t);
+  BrownianMotion& operator=(const BrownianMotion& rhs);
 
   double get_a() const;
   double get_b() const;
@@ -35,10 +38,15 @@ public:
   double get_t() const;
   double get_order() const;
   long unsigned get_seed() const;
-  const std::vector<std::vector<double>>& get_path() const;
+  std::vector<std::vector<double>> get_path() const;
   void generate_path();
   void generate_path(unsigned long seed);
   
+  void print_point() const;
+  friend std::ostream& operator<<(std::ostream& os,
+				  const BrownianMotion& current_BM);
+  friend std::istream& operator>>(std::istream& is,
+  				  BrownianMotion& current_BM);
 private:
   unsigned order_;
   double rho_;

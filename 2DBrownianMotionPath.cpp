@@ -4,12 +4,16 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <random>
+#include <string>
+#include <sstream>
+#include <iomanip>
 #include <iostream>
 #include <vector>
 #include "2DBrownianMotionPath.hpp"
 
+
 BrownianMotion::BrownianMotion()
-  : order_(64),
+  : order_(8),
     rho_(0.0),
     sigma_x_(1.0),
     sigma_y_(1.0),
@@ -56,6 +60,29 @@ BrownianMotion::BrownianMotion(long unsigned seed,
     seed_(seed)
 {
   generate_path(seed_);
+}
+
+BrownianMotion& BrownianMotion::operator=(const BrownianMotion& rhs)
+{
+  if (this==&rhs) {
+    return *this;
+  } else {
+    order_ = rhs.get_order();
+    rho_ = rhs.get_rho();
+    sigma_x_ = rhs.get_sigma_x();
+    sigma_y_ = rhs.get_sigma_y();
+    x_0_ = rhs.get_x_0();
+    y_0_ = rhs.get_y_0();
+    t_ = rhs.get_t();
+    seed_ = rhs.get_seed();
+    path_ = rhs.get_path();
+    a_ = rhs.get_a();
+    b_ = rhs.get_b();
+    c_ = rhs.get_c();
+    d_ = rhs.get_d();
+
+    return *this;
+  }
 }
 
 double BrownianMotion::get_a() const
@@ -128,7 +155,7 @@ long unsigned BrownianMotion::get_seed() const
   return seed_;
 }
 
-const std::vector<std::vector<double>>& BrownianMotion::get_path() const 
+std::vector<std::vector<double>> BrownianMotion::get_path() const 
 {
   return path_;
 }
@@ -190,4 +217,97 @@ void BrownianMotion::generate_path(unsigned long int seed)
   path_[1] = y_path;
 
   gsl_rng_free(r);
+}
+
+void BrownianMotion::print_point() const 
+{
+  printf("rho=%f\nsigma_x=%f\nsigma_y=%f\nx_0=%f\ny_0=%f\nx_T=%f\ny_T=%f\nt=%f\na=%f\nb=%f\nc=%f\nd=%f\n",
+	 rho_,
+	 sigma_x_,
+	 sigma_y_,
+	 x_0_,
+	 y_0_,
+	 get_x_T(),
+	 get_y_T(), //path_[1][path_[1].size()],
+	 t_,
+	 a_,
+	 b_,
+	 c_,
+	 d_);
+}
+
+std::ostream& operator<<(std::ostream& os,
+			 const BrownianMotion& current_BM) 
+{
+  os << "rho=" << std::scientific << std::setprecision(14) << current_BM.rho_ << ";\n";
+  os << "sigma_x=" << std::scientific << std::setprecision(14) << current_BM.sigma_x_ << ";\n";
+  os << "sigma_y=" << std::scientific << std::setprecision(14) << current_BM.sigma_y_ << ";\n";
+  os << "x_0=" << std::scientific << std::setprecision(14) << current_BM.x_0_ << ";\n";
+  os << "y_0=" << std::scientific << std::setprecision(14) << current_BM.y_0_ << ";\n";
+  os << "x_T=" << std::scientific << std::setprecision(14) << current_BM.get_x_T() << ";\n";
+  os << "y_T=" << std::scientific << std::setprecision(14) << current_BM.get_y_T() << ";\n";
+  os << "t=" <<std::scientific << std::setprecision(14) << current_BM.t_ << ";\n";
+  os << "a=" << std::scientific << std::setprecision(14) << current_BM.a_ << ";\n";
+  os << "b=" << std::scientific << std::setprecision(14) << current_BM.b_ << ";\n";
+  os << "c=" << std::scientific << std::setprecision(14) << current_BM.c_ << ";\n";
+  os << "d=" << std::scientific << std::setprecision(14) << current_BM.d_ << ";\n";
+  return os;
+}
+
+std::istream& operator>>(std::istream& is,
+			 BrownianMotion& current_BM) 
+{
+  std::string name;
+  std::string value;
+  // rho_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.rho_ = std::stod(value);
+  // sigma_x_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.sigma_x_ = std::stod(value);
+  // sigma_y_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.sigma_y_ = std::stod(value);
+  // x_0_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.x_0_ = std::stod(value);
+  // y_0_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.y_0_ = std::stod(value);
+  // x_T
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  std::vector<double>& xmoves = current_BM.path_[0];
+  xmoves[current_BM.order_] = std::stod(value);
+  // y_T
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  std::vector<double>& ymoves = current_BM.path_[1];
+  ymoves[current_BM.order_] = std::stod(value);
+  // t_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.t_ = std::stod(value);
+  // a_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.a_ = std::stod(value);
+  // b_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.b_ = std::stod(value);
+  // c_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.c_ = std::stod(value);
+  // d_
+  std::getline(is, name, '=');
+  std::getline(is, value, ';');
+  current_BM.d_ = std::stod(value);
+  return is;
 }

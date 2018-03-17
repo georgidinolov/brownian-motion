@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 						   0.0,
 						   1.0);
 	data_points[i] = BM_current;
-	data_points[i].print_point();
+	BM_current.print_point();
 
 	printf("Thread %d with address -- produces likelihood --\n",
 	       omp_get_thread_num());

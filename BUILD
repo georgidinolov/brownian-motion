@@ -1,4 +1,17 @@
 cc_binary(
+	name = "generate-likelihood-points-with-mle",
+	srcs = ["generate-likelihood-points-with-mle.cpp"],
+	includes = ["GaussianInterpolator.hpp",
+		    "MultivariateNormal.hpp"],
+	deps = ["//src/gaussian-interpolator:gaussian-interpolator",
+	        "//src/multivariate-normal:multivariate-normal"],
+	copts = ["-Isrc/nlopt/api",
+	      	 "-fopenmp"],
+	linkopts = ["-lm", "-lgsl", "-lgslcblas", "-fopenmp"],
+	visibility = ["//visibility:public"],
+)
+
+cc_binary(
 	name = "generate-likelihood-points",
 	srcs = ["generate-likelihood-points.cpp"],
 	includes = ["GaussianInterpolator.hpp"],
