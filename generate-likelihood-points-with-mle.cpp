@@ -410,6 +410,30 @@ int main(int argc, char *argv[]) {
 							   data_points[i].get_b(),
 							   data_points[i].get_c(),
 							   data_points[i].get_d());
+	    while ((current_lp.sigma_y_tilde < 0.40) ||
+		   (current_lp.t_tilde < 0.30) ||
+		   (std::abs(current_lp.rho) > 0.95)) {
+	      mvtnorm.rinvwishart(r_ptr_threadprivate,
+				  2,
+				  ss,
+				  MLE_cov,
+				  sample_cov);
+	      // //
+	      sigma_x = sqrt( gsl_matrix_get(sample_cov, 0,0) );
+	      sigma_y = sqrt( gsl_matrix_get(sample_cov, 1,1) );
+	      rho = gsl_matrix_get(sample_cov, 0, 1)/(sigma_x*sigma_y);
+
+	      current_lp = likelihood_point(rho,sigma_x,sigma_y,
+					    data_points[i].get_x_0(),
+					    data_points[i].get_y_0(),
+					    data_points[i].get_x_T(),
+					    data_points[i].get_y_T(),
+					    data_points[i].get_t(),
+					    data_points[i].get_a(),
+					    data_points[i].get_b(),
+					    data_points[i].get_c(),
+					    data_points[i].get_d());
+	    }
 
 	    current_lp.log_likelihood = 
 	      log_likelihood(std::vector<double> {sigma_x,sigma_y,rho},
