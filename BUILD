@@ -4,7 +4,7 @@ cc_binary(
 	includes = ["GaussianInterpolator.hpp",
 		    "MultivariateNormal.hpp"],
 	deps = ["//src/gaussian-interpolator:gaussian-interpolator",
-	        "//src/multivariate-normal:multivariate-normal"],
+		"//src/finite-element-igraph:basis-element-types"],
 	copts = ["-Isrc/nlopt/api",
 	      	 "-fopenmp"],
 	linkopts = ["-lm", "-lgsl", "-lgslcblas", "-fopenmp"],
