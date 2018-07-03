@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 	long unsigned seed = seed_init + i;
 	gsl_rng_set(r_ptr_threadprivate, seed);
 
-	double rho = gsl_rng_uniform(r_ptr_threadprivate)*1.90 - 0.95;
+	double rho = 0.0;//gsl_rng_uniform(r_ptr_threadprivate)*1.90 - 0.95;
 	double log_sigma_x = 2 + gsl_ran_gaussian(r_ptr_threadprivate, 2.0);
 	double log_sigma_y = 1 + gsl_ran_gaussian(r_ptr_threadprivate, 2.0);
 

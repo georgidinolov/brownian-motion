@@ -62,6 +62,22 @@ BrownianMotion::BrownianMotion(long unsigned seed,
   generate_path(seed_);
 }
 
+BrownianMotion::BrownianMotion(const BrownianMotion& rhs)
+  : order_(rhs.order_),
+    rho_(rhs.rho_),
+    sigma_x_(rhs.sigma_x_),
+    sigma_y_(rhs.sigma_y_),
+    x_0_(rhs.x_0_),
+    y_0_(rhs.y_0_),
+    t_(rhs.t_),
+    seed_(rhs.seed_),
+    path_(rhs.path_),
+    a_(rhs.a_),
+    b_(rhs.b_),
+    c_(rhs.c_),
+    d_(rhs.d_)
+{}
+    
 BrownianMotion& BrownianMotion::operator=(const BrownianMotion& rhs)
 {
   if (this==&rhs) {
@@ -160,6 +176,10 @@ std::vector<std::vector<double>> BrownianMotion::get_path() const
   return path_;
 }
 
+void BrownianMotion::set_path(const std::vector<std::vector<double>>& new_path)
+{
+  path_ = new_path;
+}
 void BrownianMotion::generate_path()
 {
   seed_ = std::chrono::system_clock::now().time_since_epoch().count();
@@ -311,3 +331,11 @@ std::istream& operator>>(std::istream& is,
   current_BM.d_ = std::stod(value);
   return is;
 }
+
+/////////////////////////////////////////////////////
+
+BrownianMotionWithDrift::BrownianMotionWithDrift()
+  : BrownianMotion(),
+    mu_x_(0.0),
+    mu_y_(0.0)
+{}

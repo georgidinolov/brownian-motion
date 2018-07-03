@@ -13,7 +13,6 @@ public:
 		 double x_0,
 		 double y_0,
 		 double t);
-
   BrownianMotion(long unsigned seed,
 		 unsigned order,
 		 double rho,
@@ -22,6 +21,7 @@ public:
 		 double x_0,
 		 double y_0,
 		 double t);
+  BrownianMotion(const BrownianMotion& rhs);
   BrownianMotion& operator=(const BrownianMotion& rhs);
 
   double get_a() const;
@@ -39,8 +39,9 @@ public:
   double get_order() const;
   long unsigned get_seed() const;
   std::vector<std::vector<double>> get_path() const;
-  void generate_path();
-  void generate_path(unsigned long seed);
+  void set_path(const std::vector<std::vector<double>>& new_path);
+  virtual void generate_path();
+  virtual void generate_path(unsigned long seed);
   
   void print_point() const;
   friend std::ostream& operator<<(std::ostream& os,
@@ -61,4 +62,14 @@ private:
   double b_; // max obtained x-dir
   double c_; // min obtained y-dir
   double d_; // max obtained y-dir
+};
+
+class BrownianMotionWithDrift :
+  public BrownianMotion
+{
+  BrownianMotionWithDrift();
+
+private:
+  double mu_x_;
+  double mu_y_;
 };
