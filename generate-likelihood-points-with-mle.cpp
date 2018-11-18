@@ -29,16 +29,34 @@ double log_likelihood(const std::vector<double> &x,
   double sigma_x = x[0];
   double sigma_y = x[1];
   double rho = x[2];
+  double mu_x = x[3];
+  double mu_y = x[4];
 
   double t = lp->get_t();
   // // //
+  double alpha = -mu_x/(sigma_x*sigma_x) 
+    - 1.0/(1-rho*rho)*(-mu_y*rho/(sigma_x*sigma_y) + mu_x*rho*rho/(sigma_x*sigma_x));
+  double beta = (-mu_y/(sigma_y*sigma_y) + mu_x*rho/(sigma_x*sigma_y))/(1-rho*rho);
+  double gamma = mu_x*alpha + mu_y*beta 
+    + 0.5*sigma_x*sigma_x*alpha*alpha
+    + 0.5*sigma_y*sigma_y*beta*beta
+    + alpha*beta*rho*sigma_x*sigma_y;
+
+  // printf("mu_x=%g, -sigma_x^2*alpha-rho*sigma_x*sigma_y*beta=%g\n",
+  // 	 mu_x,
+  // 	 -std::pow(sigma_x,2)*alpha-rho*sigma_x*sigma_y*beta);
+  // printf("mu_y=%g, -rho*sigma_x*sigma_y*alpha-sigma_y^2*beta=%g\n",
+  // 	 mu_y,
+  // 	 -std::pow(sigma_y,2)*beta-rho*sigma_x*sigma_y*alpha);
+
   double out = -log(2*M_PI*1.0*sigma_x*sigma_y*std::sqrt(1-rho*rho)*t) +
     -1/(2*t*(1-rho*rho)) * (
   			    std::pow(lp->get_x_T() - lp->get_x_0(), 2)/std::pow(sigma_x,2.0) +
   			    std::pow(lp->get_y_T() - lp->get_y_0(), 2)/std::pow(sigma_y,2.0) -
   			    2*rho*(lp->get_x_T() - lp->get_x_0())*(lp->get_y_T() - lp->get_y_0())/
 			    (sigma_x * sigma_y)
-  			    ) ;
+  			    );
+  //-alpha*lp->get_x_T() - beta*lp->get_y_T() - gamma*t;
 
   return out;
 }
@@ -323,16 +341,27 @@ int main(int argc, char *argv[]) {
 
   for (unsigned i=0; i<N; ++i) {
     data_file >> data_points[i];
-    std::cout << data_points[i];
   }
+  // ESTIMATING MU_X AND MU_Y BY AVERAGING INTEPERIOD CHANGES
+  double mu_x = 0.0;
+  double mu_y = 0.0;
+  for (unsigned i=0; i<N; ++i) {
+    mu_x = mu_x + (data_points[i].get_x_T() - data_points[i].get_x_0());
+    mu_y = mu_y + (data_points[i].get_y_T() - data_points[i].get_y_0());
+  }
+  mu_x = mu_x/N;
+  mu_y = mu_y/N;
+  std::cout << "mu_x = " << mu_x << std::endl;
+  std::cout << "mu_y = " << mu_y << std::endl;
+
   std::vector<likelihood_point> emulator_points (N*m);
 
-  std::vector<double> lb = {0.001, 0.001, -0.95};
-  std::vector<double> ub = {HUGE_VAL, HUGE_VAL,   0.95};
+  std::vector<double> lb = {0.001, 0.001, -0.95, mu_x*0.90, mu_y*0.90};
+  std::vector<double> ub = {HUGE_VAL, HUGE_VAL,   0.95, mu_x*1.10, mu_y*1.10};
   std::vector<double> MSE = std::vector<double> (N);
 
   auto t1 = std::chrono::high_resolution_clock::now();
-#pragma omp parallel default(none) private(i) shared(data_points, N, seed_init, lb, ub, MSE, m, emulator_points)
+#pragma omp parallel default(none) private(i) shared(data_points, N, seed_init, lb, ub, MSE, m, emulator_points, mu_x, mu_y)
   {
 #pragma omp for
     for (i=0; i<N; ++i) {
@@ -351,7 +380,7 @@ int main(int argc, char *argv[]) {
       //   lp.print_point();
       // }
 
-      nlopt::opt opt(nlopt::LN_NELDERMEAD, 3);
+      nlopt::opt opt(nlopt::LN_NELDERMEAD, 5);
       opt.set_lower_bounds(lb);
       opt.set_upper_bounds(ub);
       opt.set_ftol_rel(0.0001);
@@ -360,11 +389,13 @@ int main(int argc, char *argv[]) {
       // CONFIGURATION 1
       opt.set_max_objective(myfunc,
 			    &current_lps);
-      std::vector<double> optimal_params (3);
+      std::vector<double> optimal_params (5);
       optimal_params[0] = 1.0;
       optimal_params[1] = 1.0;
       optimal_params[2] = 0.0;
-	  
+      optimal_params[3] = mu_x;
+      optimal_params[4] = mu_y;
+
       opt.optimize(optimal_params, maxf);
 
       gsl_matrix * MLE_cov = gsl_matrix_alloc(2,2);
@@ -398,9 +429,6 @@ int main(int argc, char *argv[]) {
 	double sigma_y = sqrt( gsl_matrix_get(sample_cov, 1,1) );
 	double rho = gsl_matrix_get(sample_cov, 0, 1)/(sigma_x*sigma_y);
 
-	printf("x0=%g;\ny0=%g;\n",
-	       data_points[i].get_x_0(),
-	       data_points[i].get_y_0());
 	likelihood_point current_lp = likelihood_point(rho,
 						       sigma_x,
 						       sigma_y,
@@ -438,12 +466,12 @@ int main(int argc, char *argv[]) {
 	// 				    data_points[i].get_d());
 	// }
 
-	current_lp.log_likelihood = 
+	current_lp.log_likelihood =
 	  log_likelihood(std::vector<double> {sigma_x,sigma_y,rho},
 			 &data_points[i]) +
 	  log(data_points[i].get_b() - data_points[i].get_a()) +
 	  log(data_points[i].get_d() - data_points[i].get_c());
-	    
+
 	emulator_points[i*m + j] = current_lp;
       }
 
@@ -466,13 +494,15 @@ int main(int argc, char *argv[]) {
       //     }
       //   }
 
-      printf("Thread %d with address and data point %d -- produces likelihood %f: (%f, %f, %f)\n",
+      printf("Thread %d with address and data point %d -- produces likelihood %f: (sigma_x=%f,sigma_y=%f,rho=%f,mu_x=%f,mu_y=%f)\n",
 	     omp_get_thread_num(),
 	     i,
 	     maxf,
 	     optimal_params[0],
 	     optimal_params[1],
-	     optimal_params[2]);
+	     optimal_params[2],
+	     optimal_params[3],
+	     optimal_params[4]);
 
       // // // CONFIGURATION 2
       // // current_lps[0] = data_points[i];

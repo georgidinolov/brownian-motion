@@ -45,13 +45,13 @@ int main(int argc, char *argv[]) {
 // 				 1.0);
 
   long unsigned seed_init = 10;
-   gsl_rng * r_ptr_local;
-   const gsl_rng_type * Type;
-   gsl_rng_env_setup();
-   Type = gsl_rng_default;
-   r_ptr_local = gsl_rng_alloc(Type);
-   gsl_rng_set(r_ptr_local, seed_init + N);
-
+  gsl_rng * r_ptr_local;
+  const gsl_rng_type * Type;
+  gsl_rng_env_setup();
+  Type = gsl_rng_default;
+  r_ptr_local = gsl_rng_alloc(Type);
+  gsl_rng_set(r_ptr_local, seed_init + N);
+  
   int tid=0;
 #pragma omp parallel default(none) private(tid, i) shared(r_ptr_local)
   {

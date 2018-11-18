@@ -1,4 +1,13 @@
 cc_binary(
+	name = "generate-OCHL-data-points-for-chapter-2",
+	srcs = ["generate-OCHL-data-points-for-chapter-2.cpp"],
+	includes = ["2DBrownianMotionPath.hpp"],
+	deps = [":2d-brownian-motion"],
+	copts = ["-O", "-fopenmp"],
+	linkopts = ["-fopenmp"],
+)
+
+cc_binary(
 	name = "generate-likelihood-points-with-mle",
 	srcs = ["generate-likelihood-points-with-mle.cpp"],
 	includes = ["GaussianInterpolator.hpp",
