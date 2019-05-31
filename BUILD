@@ -66,4 +66,5 @@ cc_library(
 	hdrs = ["2DBrownianMotionPath.hpp"],
 	visibility = ["//visibility:public"],
 	linkopts = ["-lm", "-lgsl", "-lgslcblas"],
+	copts = ["-O"]
 )
